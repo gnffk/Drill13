@@ -145,24 +145,33 @@ class Zombie:
         return BehaviorTree.SUCCESS
         pass
 
-    def avoid_to_boy(self):
+    def avoid_to_boy(self, r=0.5):
+        self.state = 'Avoid'
+        self.move_slightly_to(play_mode.boy.x, play_mode.boy.y)
+        if self.distance_less_than(play_mode.boy.x, play_mode.boy.y, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
         pass
     def build_behavior_tree(self):
-        a1 = Action('Set target location', self.set_target_location, 500,50)# action node생성
-        a2 = Action('Move to', self.move_to)  # action node생
-        a4 = Action('Move to boy', self.move_to_boy)
-        a5 = Action('Take Patrol location', self.get_patrol_location)
-        a6 = Action('Avoid', self.avoid_to_boy)
-        c1 = Condition('Near boy', self.is_boy_nearby,7)
+
+
+
         c2 = Condition('ball_count_avoid', self.ball_count_avoid)
         c3 = Condition('ball_count_chase', self.ball_count_chase)
-
-        SEQ_move_to_target_location = Sequence('Move to target location', a1, a2)
-        SEQ_patrol = Sequence('Patrol', a5, a2)
+        a4 = Action('Move to boy', self.move_to_boy)
         SEQ_chase_boy = Sequence('Chase boy', c2, a4)
+        a6 = Action('Avoid', self.avoid_to_boy)
         SEQ_avoid_boy = Sequence('Avoid boy', c3, a6)
         SEL_avoid_or_chase = Sequence('Chose one', SEQ_chase_boy,SEQ_avoid_boy)
+
+        c1 = Condition('Near boy', self.is_boy_nearby, 7)
         SEQ_avoid_or_chase = Sequence('avoid or chase', c1, SEL_avoid_or_chase )
+
+
+        a2 = Action('Move to', self.move_to)  # action node생
+        a5 = Action('Take Patrol location', self.get_patrol_location)
+        SEQ_patrol = Sequence('Patrol', a5, a2)
         root = SEL_chase_or_patrol = Selector('Chase or patrol', SEQ_avoid_or_chase, SEQ_patrol)
 
         self.bt = BehaviorTree(root)
