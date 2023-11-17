@@ -149,8 +149,13 @@ class Zombie:
         pass
 
     def avoid_to_boy(self, r=0.5):
-        self.state = 'Avoid'
-        self.move_slightly_to(play_mode.boy.x, play_mode.boy.y)
+        self.state = 'Walk'
+        dir_to_boy = math.atan2(play_mode.boy.y - self.y, play_mode.boy.x - self.x)
+        new_tx = self.x + r * math.cos(dir_to_boy + math.pi)
+        new_ty = self.y + r * math.sin(dir_to_boy + math.pi)
+        self.move_slightly_to(new_tx, new_ty)
+
+
         if self.distance_more_than(play_mode.boy.x, play_mode.boy.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:
