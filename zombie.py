@@ -144,8 +144,9 @@ class Zombie:
 
         SEQ_move_to_target_location = Sequence('Move to target location', a1, a2)
         SEQ_wander = Sequence('Wander',a3,a2)
+        SEQ_patrol = Sequence('Patrol', a5, a2)
         SEQ_chase_boy = Sequence('Chase boy', c1, a4)
-        SEL_chase_or_wander = Selector('Chase or wander', SEQ_chase_boy,SEQ_wander)
-        root = SEQ_patrol = Sequence('Patrol',a5,a2)
+        root = SEL_chase_or_patrol = Selector('Chase or patrol', SEQ_chase_boy, SEQ_patrol)
+
         self.bt = BehaviorTree(root)
         pass
