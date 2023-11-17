@@ -88,7 +88,10 @@ class Zombie:
         distance2 = (x1-x2)**2+(y1-y2)**2
         return distance2< (r*PIXEL_PER_METER)**2
         pass
-
+    def distance_more_than(self, x1, y1, x2, y2, r):
+        distance2 = (x1-x2)**2+(y1-y2)**2
+        return distance2> (r*PIXEL_PER_METER)**2
+        pass
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty-self.y, tx-self.x)
         self.speed = RUN_SPEED_PPS
@@ -148,7 +151,7 @@ class Zombie:
     def avoid_to_boy(self, r=0.5):
         self.state = 'Avoid'
         self.move_slightly_to(play_mode.boy.x, play_mode.boy.y)
-        if self.distance_less_than(play_mode.boy.x, play_mode.boy.y, self.x, self.y, r):
+        if self.distance_more_than(play_mode.boy.x, play_mode.boy.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -160,10 +163,10 @@ class Zombie:
         c2 = Condition('ball_count_avoid', self.ball_count_avoid)
         c3 = Condition('ball_count_chase', self.ball_count_chase)
         a4 = Action('Move to boy', self.move_to_boy)
-        SEQ_chase_boy = Sequence('Chase boy', c2, a4)
+        SEQ_chase_boy = Sequence('Chase boy', c3, a4)
         a6 = Action('Avoid', self.avoid_to_boy)
-        SEQ_avoid_boy = Sequence('Avoid boy', c3, a6)
-        SEL_avoid_or_chase = Sequence('Chose one', SEQ_chase_boy,SEQ_avoid_boy)
+        SEQ_avoid_boy = Sequence('Avoid boy', c2, a6)
+        SEL_avoid_or_chase = Selector('Chose one', SEQ_chase_boy,SEQ_avoid_boy)
 
         c1 = Condition('Near boy', self.is_boy_nearby, 7)
         SEQ_avoid_or_chase = Sequence('avoid or chase', c1, SEL_avoid_or_chase )
